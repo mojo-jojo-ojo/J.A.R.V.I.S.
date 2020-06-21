@@ -1,0 +1,152 @@
+#install pyttsx3 using : pip install pyttsx3 in terminal
+#pip install SpeechRecognition
+#pip install wikipedia
+
+import pyttsx3
+import datetime
+import speech_recognition as SR
+import wikipedia
+
+
+
+
+engine=pyttsx3.init() #object creation
+
+rate = engine.getProperty('rate')
+
+
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[0].id)  #to change voices
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+#speak("Hello Ojaswini, This is JARVIS your AI assistant")    
+
+
+def time():
+       # getting details of current speaking rate
+    #print (rate) 
+    speak("The time is")
+    engine.setProperty('rate', 220)  #lower the number , lower the speed   
+
+    Time=datetime.datetime.now().strftime("%I:%M:%S")
+    speak(Time)
+
+
+def date():
+    speak("The current date is")
+    
+    engine.setProperty('rate',250)
+    year=int(datetime.datetime.now().year)
+    month=int(datetime.datetime.now().month)
+    date=int(datetime.datetime.now().day)
+    speak(date)
+    speak(month)
+    speak(year)
+
+
+def userIntro():
+    speak("May I ask your name?")
+    a=SR.Recognizer()
+    with SR.Microphone() as source:
+        print("Listening...")
+        a.pause_threshold=1
+        audio=a.listen(source)
+
+    try:
+        print("Recognizing...")
+        query = a.recognize_google(audio, language='en-in')
+        print(query)
+
+    except Exception as e:
+        print(e)
+        speak("Say that again please..")
+
+        return "None"
+    query = query.replace("my name is","")
+    speak("Hello"+" "+query) 
+    
+
+
+def intro():
+    speak("Hello")
+    speak("I am JARVIS!")
+    speak("Your AI assistant")
+
+    userIntro()
+
+    
+           
+    
+   
+    hour= datetime.datetime.now().hour
+    engine.setProperty('rate',180)
+    if hour >= 6 and hour<12:
+        speak("Good Morning")
+    elif hour>=12 and hour<18:
+        speak("Good afternoon ")
+    elif hour >=18 and hour<24:
+        speak("Good Evening ")
+    else:
+        speak("Good night")           
+
+    engine.setProperty('rate',200)
+    speak("Please, tell me how can I help you?")
+
+
+
+
+def takeCmd():
+    a=SR.Recognizer()
+    with SR.Microphone() as source:
+        print("Listening...")
+        a.pause_threshold=1
+        audio=a.listen(source)
+
+    try:
+        print("Recognizing...")
+        query = a.recognize_google(audio, language='en-in')
+        print(query)
+
+    except Exception as e:
+        print(e)
+        speak("Say that again please..")
+
+        return "None"
+    return query
+
+
+
+
+
+
+
+if __name__== "__main__":
+    intro()
+    while True:
+        query = takeCmd().lower()
+
+        if 'time' in query:
+            time()
+
+        elif 'date' in query:
+            date()
+
+        elif 'wikipedia' in query:
+            speak("Searching.... ")
+            query = query.replace("wikipedia","")
+            result=wikipedia.summary(query,sentences=2) 
+            print(result)
+            speak(result) 
+
+        elif 'bye' or 'offline'  in query:
+            speak("Bye Ojaswini")
+            speak(" Have a Gooood day ahead!")
+            quit()
+
+       
+
+
+           
